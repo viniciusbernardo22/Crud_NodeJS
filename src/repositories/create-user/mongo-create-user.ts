@@ -5,11 +5,11 @@ import {
 import { MongoClient } from "../../database/mongo";
 import { User } from "../../models/user";
 
-export class MongoCreateUser implements ICreateUserRepository {
+export class MongoCreateUserRepository implements ICreateUserRepository {
   async createUser(params: CreateUserParams): Promise<User> {
-    const collection = MongoClient.db.collection("users");
-
-    const { insertedId } = await collection.insertOne(params);
+    const { insertedId } = await MongoClient.db
+      .collection("users")
+      .insertOne(params);
 
     const user = await MongoClient.db
       .collection<Omit<User, "id">>("users")
