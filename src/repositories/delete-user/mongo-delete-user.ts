@@ -2,14 +2,13 @@ import { ObjectId } from "mongodb";
 import { IDeleteUserRepository } from "../../controllers/delete-user/protocols";
 import { MongoClient } from "../../database/mongo";
 import { User } from "../../models/user";
+import { MongoUser } from "../mongo-protocols";
 
 export class MongoDeleteUserRepository implements IDeleteUserRepository {
   async deleteUser(id: string): Promise<User> {
-    const user = await MongoClient.db
-      .collection<Omit<User, "id">>("users")
-      .findOne({
-        _id: new ObjectId(id),
-      });
+    const user = await MongoClient.db.collection<MongoUser>("users").findOne({
+      _id: new ObjectId(id),
+    });
 
     if (!user) {
       throw new Error("User Not Found");
@@ -25,11 +24,12 @@ export class MongoDeleteUserRepository implements IDeleteUserRepository {
       throw new Error("User not deleted");
     }
 
-    const { _id, ...rest } = user;
+    // const { _id, ...rest } = user;
 
-    return {
-      id: _id.toHexString(),
-      ...rest,
-    };
+    // return {
+    //   id: _id.toHexString(),
+    //   ...rest,
+    // };
+    return MongoClient.MapId(user);
   }
 }
